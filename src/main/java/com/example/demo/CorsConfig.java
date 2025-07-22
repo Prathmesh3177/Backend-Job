@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                    .allowedOrigins("https://job-aggregator-eosin.vercel.app")
+                    .allowedOrigins("https://job-aggregator-eosin.vercel.app","job-aggregator-ivajg9y3a-prathmesh3177s-projects.vercel.app")
                     .allowedMethods("GET", "POST", "PUT", "DELETE")
                     .allowedHeaders("*")
                     .allowCredentials(true);
