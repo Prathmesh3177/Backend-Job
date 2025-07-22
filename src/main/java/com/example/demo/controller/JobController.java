@@ -15,12 +15,7 @@ public class JobController {
     private JobService jobService;
 
     @GetMapping("/fetch")
-    public List<Job> getAllJobsFromDatabase() {
-        return jobService.getAllJobsFromDB();
-    }
-
-    @PostMapping("/refresh")
-    public List<Job> refreshJobs() {
-        return jobService.fetchAndSaveJobsFromAPI();
+    public List<Job> getJobsFromAPI() {
+        return jobService.fetchJobsFromAPI();
     }
 }

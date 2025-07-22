@@ -4,4 +4,3 @@ com/example/demo/service/JobService.class
 com/example/demo/DemoApplication.class
 com/example/demo/model/Job.class
 com/example/demo/CorsConfig$1.class
-com/example/demo/repository/JobRepository.class
