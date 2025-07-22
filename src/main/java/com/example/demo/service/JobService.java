@@ -3,13 +3,15 @@ package com.example.demo.service;
 import com.example.demo.model.Job;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.Scanner;
 
 @Service
@@ -21,12 +23,24 @@ public class JobService {
     @Value("${adzuna.api.key}")
     private String apiKey;
 
+    @Autowired
+    private RemotiveJobService remotiveJobService;
+
+    @Autowired
+    private JSearchJobService jSearchJobService;
+
     public List<Job> fetchJobsFromAPI() {
-        List<Job> jobs = new ArrayList<>();
+        List<Job> allJobs = new ArrayList<>();
+
+        // 1. Fetch from Adzuna
         try {
-            String apiUrl = "https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=" + appId
+            int randomPage = new Random().nextInt(5) + 1;
+            String apiUrl = "https://api.adzuna.com/v1/api/jobs/in/search/" + randomPage
+                    + "?app_id=" + appId
                     + "&app_key=" + apiKey
-                    + "&results_per_page=20&what=entry%20level%20OR%20fresher&content-type=application/json";
+                    + "&results_per_page=20"
+                    + "&what=entry%20level%20OR%20fresher"
+                    + "&content-type=application/json";
 
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -52,14 +66,30 @@ public class JobService {
                 job.setLocation(jobJson.getJSONObject("location").optString("display_name"));
                 job.setUrl(jobJson.optString("redirect_url"));
                 job.setDescription(jobJson.optString("description"));
+                job.setSource("Adzuna");
 
-                jobs.add(job);
+                allJobs.add(job);
             }
-
         } catch (Exception e) {
-            System.out.println("❌ Error fetching jobs: " + e.getMessage());
+            System.out.println("❌ Adzuna error: " + e.getMessage());
         }
 
-        return jobs;
+        // 2. Fetch from Remotive
+        allJobs.addAll(remotiveJobService.fetchJobs());
+
+        // 3. Fetch from JSearch (asynchronously)
+        try {
+            List<Job> jsearchJobs = jSearchJobService.fetchJobs().join(); // Wait for completion
+            allJobs.addAll(jsearchJobs);
+        } catch (Exception e) {
+            System.out.println("❌ JSearch error: " + e.getMessage());
+        }
+
+        // 4. Remove duplicates (by title + company)
+        return allJobs.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(j -> j.getTitle() + j.getCompany(), j -> j, (j1, j2) -> j1),
+                        map -> new ArrayList<>(map.values())
+                ));
     }
 }

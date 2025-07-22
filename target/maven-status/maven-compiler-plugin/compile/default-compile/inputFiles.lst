@@ -2,4 +2,6 @@
 /Users/prathmeshbondar/Desktop/Job-aggregator/Backend-Job/src/main/java/com/example/demo/CorsConfig.java
 /Users/prathmeshbondar/Desktop/Job-aggregator/Backend-Job/src/main/java/com/example/demo/controller/JobController.java
 /Users/prathmeshbondar/Desktop/Job-aggregator/Backend-Job/src/main/java/com/example/demo/service/JobService.java
+/Users/prathmeshbondar/Desktop/Job-aggregator/Backend-Job/src/main/java/com/example/demo/service/RemotiveJobService.java
+/Users/prathmeshbondar/Desktop/Job-aggregator/Backend-Job/src/main/java/com/example/demo/service/JSearchJobService.java
 /Users/prathmeshbondar/Desktop/Job-aggregator/Backend-Job/src/main/java/com/example/demo/DemoApplication.java
